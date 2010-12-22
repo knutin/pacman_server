@@ -20,7 +20,15 @@ start_link() ->
 init([]) ->
     Server = {game_server, {game_server, start_link, []},
               permanent, 2000, worker, [game_server]},
-    Children = [Server],
+    Web = web_specs(pacman_web, 8080),
+    Children = [Server, Web],
     RestartStrategy = {one_for_one, 0, 1},
     {ok, {RestartStrategy, Children}}.
 
+web_specs(Mod, Port) ->
+    WebConfig = [{ip, {0,0,0,0}},
+                 {port, Port}],
+
+    {Mod,
+     {Mod, start, [WebConfig]},
+     permanent, 5000, worker, dynamic}.
