@@ -1,0 +1,5 @@
+TODO:
+ * Timeout between 'move' calls, abort game if timeout is reached without a move
+ * Supervise game_server
+ * Allow ghosts to compute moves in parallel
+ 
