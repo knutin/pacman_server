@@ -1,3 +1,15 @@
+%%% @author Knut Ivar Nesheim <knutin@gmail.com>
+%%% @copyright (C) 2010, Knut Ivar Nesheim
+%%% @doc
+%%% Pacman game server
+%%%
+%%% Implements a non-blocking TCP server for communicating with game clients.
+%%% When a new connection is received, a game_worker is started and is given
+%%% control over the connection. The worker will live as long as the game is
+%%% still in progress.
+%%%
+%%% @end
+
 -module(game_server).
 -author('knutin@gmail.com').
 
@@ -5,7 +17,7 @@
 
 -behaviour(gen_nb_server).
 
--export([start/0]).
+-export([start_link/0]).
 
 -export([init/1,
          handle_call/3,
@@ -16,7 +28,7 @@
          sock_opts/0,
          new_connection/2]).
 
-start() -> 
+start_link() ->
     start_link("0.0.0.0", 2222).
 
 start_link(IpAddr, Port) ->
