@@ -45,7 +45,8 @@ feed(Response, Token) ->
     receive
         {state_update, State} ->
             error_logger:info_msg("~s: Sending new state~n", [Token]),
-            Msg = io_lib:format("data: ~s~n~n", [game_util:map2txt(State#state.map)]),
+            Msg = io_lib:format("data: ~p ~s~n~n", [element(2, State#state.map),
+                                                    game_util:map2txt(State#state.map)]),
             Response:write_chunk(Msg)
     %%after 10000 ->
     %%        Response:write_chunk(io_lib:format("data: ~p~n~n", [Token]))
