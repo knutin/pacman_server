@@ -19,7 +19,26 @@ stop() ->
     mochiweb_http:stop(?MODULE).
 
 loop(Req) ->
-    error_logger:info_msg("Web: Path: ~p~n", [Req:get(path)]),
-    Req:not_found().
+    Path = Req:get(path),
+    error_logger:info_msg("Web: Path: ~p~n", [Path]),
+    case Path of
+        "/game/" ->
+            Req:serve_file("index.html", "priv/docroot/");
+        "/game/" ++ Token ->
+            %% Setup chunked transfer
+            Response = Req:ok({"text/event-stream",
+                               [{"Server", "Mochiweb-pacman"}],
+                               chunked}),
 
+            feed(Response, Token);
+        _ ->
+            Req:not_found()
+    end.
+
+
+feed(Response, Token) ->
+    Response:write_chunk(lists:flatten(io_lib:format("data: ~p~n~n", [Token]))),
+    error_logger:info_msg("~p: Wrote chunk~n", [Token]),
+    timer:sleep(3000),
+    feed(Response, Token).
 
