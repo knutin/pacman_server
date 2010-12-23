@@ -3,4 +3,5 @@ TODO:
  * Allow ghosts to compute moves in parallel
  * When a web client disconnects, remove it from the token2pid table, link and trap_exit
  * When a game client disconnects, disconnect web clients and clean the token2pid table
+ * Make the random token truly random, now the prng will reset on every system start
  
