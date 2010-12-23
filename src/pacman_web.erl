@@ -7,6 +7,8 @@
 -module(pacman_web).
 -author('knutin@gmail.com').
 
+-include_lib("../include/game.hrl").
+
 -export([start/1, stop/0, loop/1]).
 
 start(Options) ->
@@ -25,6 +27,9 @@ loop(Req) ->
         "/game/" ->
             Req:serve_file("index.html", "priv/docroot/");
         "/game/" ++ Token ->
+            %% Register this client with the game token
+            router:register(self(), Token),
+
             %% Setup chunked transfer
             Response = Req:ok({"text/event-stream",
                                [{"Server", "Mochiweb-pacman"}],
@@ -37,8 +42,15 @@ loop(Req) ->
 
 
 feed(Response, Token) ->
-    Response:write_chunk(lists:flatten(io_lib:format("data: ~p~n~n", [Token]))),
-    error_logger:info_msg("~p: Wrote chunk~n", [Token]),
-    timer:sleep(3000),
+    receive
+        {state_update, State} ->
+            error_logger:info_msg("~s: Sending new state~n", [Token]),
+            Msg = io_lib:format("data: ~s~n~n", [game_util:map2txt(State#state.map)]),
+            Response:write_chunk(Msg)
+    %%after 10000 ->
+    %%        Response:write_chunk(io_lib:format("data: ~p~n~n", [Token]))
+    %%        %%error_logger:info_msg("~p: Wrote chunk~n", [Token])
+    end,
+
     feed(Response, Token).
 

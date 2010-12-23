@@ -18,7 +18,8 @@
          allowed_position/2,
          make_map/1,
          until_first_corner/1,
-         get_path/3
+         get_path/3,
+         token/1
         ]).
 
 %% @doc: Returns the object at given position in the map
@@ -186,3 +187,6 @@ get_path(G, Start, End) ->
         [_ | P] -> P;
         false -> throw({no_path, Start, End, G})
     end.
+
+token(N) ->
+    lists:map(fun (_) -> random:uniform(25) + 65 end, lists:seq(1, N)).

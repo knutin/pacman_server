@@ -44,11 +44,7 @@ handle_cast(_Msg, State) -> {noreply, State}.
 %% @doc: Receive data from client, call the corresponding game_engine commands
 %%       The method in game_engine must return {ok, NewState, ResultToUser}
 handle_info({tcp, _Port, Bs}, State) ->
-    Data = binary_to_list(Bs),
-    error_logger:info_msg("Received: ~p~n", [Data]),
-
-    {Command, Args} = parse_data(Data),
-    error_logger:info_msg("Command: ~p, Args: ~p~n", [Command, Args]),
+    {Command, Args} = parse_data(binary_to_list(Bs)),
 
     %% Validate the command
     case lists:member(Command, ?ALLOWED_COMMANDS) of
@@ -57,6 +53,11 @@ handle_info({tcp, _Port, Bs}, State) ->
     end,
 
     {ok, NewState, Result} = game_engine:handle(Command, Args, State),
+
+    %% Notify any connected listeners
+    %% TODO: Validate token
+    Token = proplists:get_value("token", Args),
+    router:state_update(Token, NewState),
 
     error_logger:info_msg("Result: ~p~n", [Result]),
 
