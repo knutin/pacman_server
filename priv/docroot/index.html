@@ -5,25 +5,56 @@
   <title>Game viewer</title>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
   <script type="text/javascript">
-    $(document).ready(function() {
-        $("#token_form").submit(function() {
-            var token = $("#token").val();
-            var url = "/game/" + token;
-            var e = new EventSource(url);
-            console.log('submit');
+ $(document).ready(function() {
+     $("#token_form").submit(function() {
+         var token = $("#token").val();
+         var url = "/game/" + token;
+         var e = new EventSource(url);
+         
+         e.addEventListener('open', function(event) {
+             console.log('Got connection!');
+         });
 
-            e.addEventListener('open', function(event) {
-                console.log('open');
-            });
+         e.onmessage = function(event) {
+             var data = event.data.split(" ");
+             var map = data.pop();
+             var length = data.pop();
 
-            e.onmessage = function(event) {
-                var data = event.data;
-                console.log(data);
-            };
+             $("#map").html("<pre>" + draw_map(map, length) + "</pre");
+         };
 
-            return false;
-        });
-    });
+         return false;
+     });
+ });
+
+var OBJECTS = {
+    0: ' ',
+    1: '<',
+    2: '*',
+    3: 'O',
+    4: '|',
+    5: 'B',
+    6: 'P',
+    7: 'I',
+    8: 'C'
+};
+
+function draw_map(mapstr, length) {
+    var map = [];
+    var running = [];
+    for (var i = 0; i < mapstr.length; i++) {
+        var o = mapstr[i];
+
+        if (i > 0 && i % length == 0) {
+            map.push(running.join(' '));
+            var running = [];
+        }
+        running.push(OBJECTS[o]);
+    }
+    map.push(running.join(' '));
+
+    return map.join('\n');
+};
   </script>
 </head>
 <body>
@@ -32,6 +63,9 @@
     <input type="text" id="token" name="token" />
     <input type="submit" value="Watch game" />
   </form>
+
+<div id="map"></div>
+
 
 </body>
 </html>
