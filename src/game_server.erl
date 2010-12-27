@@ -36,6 +36,7 @@ start_link(IpAddr, Port) ->
 
 init([]) ->
     ets:new(?MAP_TABLE, [set, named_table, public]),
+    ets:new(?GAMES_TABLE, [set, named_table, public]),
     game_engine:load_maps(),
     error_logger:info_msg("Server started OK~n"),
     {ok, []}.

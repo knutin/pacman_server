@@ -1,6 +1,7 @@
 %% Object types
 
 -define(MAP_TABLE, maps).
+-define(GAMES_TABLE, games).
 
 -define(PACMAN , 1).
 -define(PACDOT , 2).
@@ -43,10 +44,11 @@
 %% Game state
 -record(state, {
           email,
-          sock, %% Client socket
-          pid, %% Pid of the server process where the game is running
+          token, %% Unique token identifying this game in communications
+          sock,  %% Client socket
+          pid,   %% Pid of the server process where the game is running
           score = 0,
-          map, %% {Size, Map::array()}
+          map,   %% {Size, Map::array()}
           pacman = #player{},
           ghosts = [],
           num_moves = 0

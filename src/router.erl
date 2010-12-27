@@ -22,7 +22,7 @@
 
 
 %% API
--export([state_update/2, register/2, unregister/2, start_link/0]).
+-export([state_update/2, register/2, unregister/2, clear/1, start_link/0]).
 
 -record(router, {
           token2pid, % ets table reference
@@ -43,6 +43,10 @@ register(Pid, Token) ->
 unregister(Pid, Token) ->
     gen_server:call(?SERVER, {unregister, Pid, Token}).
 
+%% @doc: Removes all pids connected to Token
+clear(Token) ->
+    gen_server:call(?SERVER, {clear, Token}).
+
 
 init([]) ->
     {ok, #router{token2pid = ets:new(?MODULE, [bag])}}.
@@ -59,6 +63,10 @@ handle_call({state_update, Token, GameState}, _From, State) ->
 handle_call({register, Pid, Token}, _From, State) when is_pid(Pid) ->
     ets:insert(State#router.token2pid, {Token, Pid}),
     error_logger:info_msg("Router: Registered ~p for ~p~n", [Pid, Token]),
+    {reply, ok, State};
+
+handle_call({clear, Token}, _From, State) ->
+    ets:delete(State#router.token2pid, Token),
     {reply, ok, State};
 
 handle_call(_Request, _From, State) ->

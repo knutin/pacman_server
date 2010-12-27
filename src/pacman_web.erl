@@ -24,8 +24,14 @@ loop(Req) ->
     Path = Req:get(path),
     error_logger:info_msg("Web: Path: ~p~n", [Path]),
     case Path of
+        %% Returns the game viewer
         "/game/" ->
             Req:serve_file("index.html", "priv/docroot/");
+        %% Returns a list of active game tokens as a JSON array
+        "/games/" ->
+            GameTokens = [T || {T, _Pid} <- ets:tab2list(?GAMES_TABLE)],
+            Req:ok({"text/javascript", mochijson:encode({array, GameTokens})});
+        %% Event-stream of moves in a game
         "/game/" ++ Token ->
             %% Register this client with the game token
             router:register(self(), Token),

@@ -19,7 +19,7 @@
 %% @end
 start(Sock) ->
     {ok, Pid} = gen_server:start(?MODULE, [Sock], []),
-    register(gw, Pid),
+    %%register(gw, Pid),
 
     gen_tcp:controlling_process(Sock, Pid),
     inet:setopts(Sock, [{active, once}]),
@@ -27,9 +27,15 @@ start(Sock) ->
     error_logger:info_msg("~p Started game worker~n", [Pid]),
     {ok, Pid}.
 
-%% @doc: Initialize new game state
+%% @doc: Initialize new game state record. This creates a new unique token and
+%%       adds the game to the global game table.
 init([Sock]) ->
-    State = #state{sock = Sock, pid = self()},
+    State = #state{sock  = Sock,
+                   pid   = self(),
+                   token = game_util:token(10)},
+    %% Register the game
+    ets:insert(?GAMES_TABLE, {State#state.token, State#state.pid}),
+
     {ok, State}.
 
 
@@ -66,6 +72,13 @@ handle_info({tcp, _Port, Bs}, State) ->
     inet:setopts(State#state.sock, [{active, once}]),
 
     {noreply, NewState};
+
+%% @doc: The client disconnected.
+handle_info({tcp_closed, _Port}, State) ->
+    Token = State#state.token,
+    router:clear(Token),
+    ets:delete(?GAMES_TABLE, Token),
+    {noreply, State};
 
 handle_info(Info, State) ->
     error_logger:info_msg("~p Received info: ~p~n", [self(), Info]),

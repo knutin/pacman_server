@@ -40,7 +40,6 @@ handle(_Action, _Args, State) ->
 %%       game and the map. State is already initialized with the client socket.
 %% @end
 start(State, Args) ->
-    Token = game_util:token(40),
     Email = proplists:get_value("email", Args),
     _NumGhosts = proplists:get_value("ghosts", Args),
     Map = get_map(proplists:get_value("map", Args)),
@@ -55,7 +54,7 @@ start(State, Args) ->
                            map = Map,
                            ghosts = Ghosts},
 
-    Result = [{"token", Token},
+    Result = [{"token", NewState#state.token},
               {"map", game_util:map2txt(NewState#state.map)},
               {"mapwidth", Size}
              ],

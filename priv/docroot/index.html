@@ -6,26 +6,36 @@
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
   <script type="text/javascript">
  $(document).ready(function() {
-     $("#token_form").submit(function() {
-         var token = $("#token").val();
-         var url = "/game/" + token;
-         var e = new EventSource(url);
-         
-         e.addEventListener('open', function(event) {
-             console.log('Got connection!');
+     $.getJSON("/games/", function(data, responsetext) {
+         var ul = $("#tokens");
+         $(data).each(function(i, token) {
+             ul.append("<li><a href='#'>" + token + "</a></li>")
+                 .click(function() {
+                     display_game(token);
+                 });
          });
-
-         e.onmessage = function(event) {
-             var data = event.data.split(" ");
-             var map = data.pop();
-             var length = data.pop();
-
-             $("#map").html("<pre>" + draw_map(map, length) + "</pre");
-         };
-
-         return false;
      });
  });
+
+function display_game(token) {
+    var url = "/game/" + token;
+    var e = new EventSource(url);
+    var map_div = $("#map");
+         
+    e.addEventListener('open', function(event) {
+        map_div.html("Connected.. Waiting for moves");
+    });
+
+    e.onmessage = function(event) {
+        var data = event.data.split(" ");
+        var map = data.pop();
+        var length = data.pop();
+
+        map_div.html("<pre>" + draw_map(map, length) + "</pre");
+    };
+
+    return false;
+}
 
 var OBJECTS = {
     0: ' ',
@@ -58,11 +68,9 @@ function draw_map(mapstr, length) {
   </script>
 </head>
 <body>
-  <form id="token_form">
-    Token:
-    <input type="text" id="token" name="token" />
-    <input type="submit" value="Watch game" />
-  </form>
+<h1>Pacman Game Viewer</h1>
+
+<ul id="tokens"></ul>
 
 <div id="map"></div>
 
