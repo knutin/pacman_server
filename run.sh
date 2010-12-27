@@ -1,4 +1,4 @@
 #!/bin/bash
-erl -pa ebin deps/*/ebin ../gen_nb_server/ebin/ \
+erl -pa ebin deps/*/ebin \
     -boot start_sasl \
     -s pacman
