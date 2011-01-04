@@ -26,6 +26,7 @@ API
 ---
 
 The API has the following actions:
+
  * 'start'
  * 'move'
  * 'wingame' - not implemented yet
@@ -37,10 +38,12 @@ The API has the following actions:
 subsequent API requests for this game.
 
 Arguments:
+
  * 'email' - your full email
  * 'map' - name of the map you wish to play, ["small", "small_empty", "medium", "real_1", "classic", "world"]
 
 Returns:
+
  * 'token' - unique identifier for this game. May be used when watching the
    game.
  * 'map' - map as string, see MAP below
@@ -53,10 +56,12 @@ Calling 'move' will move Pacman in the specified direction. After Pacman has
 moved, the ghosts are allowed to make their move.
 
 Arguments:
+
  * 'token'
  * 'direction' - ["up", "right", "down", "left"]
 
 Returns:
+
  * 'state': "ok" if you are still alive, "game_over" if you are dead,
             "game_won" (not implemented yet) if you have won the game
 
