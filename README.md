@@ -25,23 +25,39 @@ and then the arguments encoded as JSON.
 API
 ---
 
-<table>
-        <tr>
-        <td>'start'</td>
-        <td>Starts a new game. The returned token must be included in all subsequent API requests for this game.</td>
-        </tr>
+The API has the following actions:
+ * 'start'
+ * 'move'
+ * 'wingame' - not implemented yet
 
-        <tr>
-        <td>Arguments</td>
-        </tr>
 
-        <tr>
-        <td>'email'</td>
-        <td>youremail@fqdn.tld</td>
-        </tr>
-        <tr>
-        <td>'map'</td>
-        <td>the name of the map ["small", "small_empty", "medium", "real_1", "classic", "world"]</td>
-        </tr>
-</table>
+### 'start' ###
+
+'start' initializes a new game. The returned token must be included in all
+subsequent API requests for this game.
+
+Arguments:
+ * 'email' - your full email
+ * 'map' - name of the map you wish to play, ["small", "small_empty", "medium", "real_1", "classic", "world"]
+
+Returns:
+ * 'token' - unique identifier for this game. May be used when watching the
+   game.
+ * 'map' - map as string, see MAP below
+ * 'mapwidth' - the map is a square and this tells you how many objects
+   there are in each row
+
+### 'move' ###
+
+Calling 'move' will move Pacman in the specified direction. After Pacman has
+moved, the ghosts are allowed to make their move.
+
+Arguments:
+ * 'token'
+ * 'direction' - ["up", "right", "down", "left"]
+
+Returns:
+ * 'state': "ok" if you are still alive, "game_over" if you are dead,
+            "game_won" (not implemented yet) if you have won the game
+
 
