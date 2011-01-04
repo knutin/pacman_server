@@ -19,15 +19,22 @@ Every message must adhere to the following format:
 
     action JSON-ENCODED-DATA
 
+That is, a keyword with the name of the action you wish to perform, a space
+and then the arguments encoded as JSON.
 
 API
 ---
 
-* start
-
-Starts a new game
-
 <table>
+        <tr>
+        <td>'start'</td>
+        <td>Starts a new game. The returned token must be included in all subsequent API requests for this game.</td>
+        </tr>
+
+        <tr>
+        <td>Arguments</td>
+        </tr>
+
         <tr>
         <td>'email'</td>
         <td>youremail@fqdn.tld</td>
