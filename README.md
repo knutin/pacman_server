@@ -23,9 +23,10 @@ Every message must adhere to the following format:
     action JSON-ENCODED-DATA
 
 That is, a keyword with the name of the action you wish to perform, a space
-and then the arguments encoded as JSON. You should only send one command and
-then wait for a reply. If your program is not well behaved, the server will
-crash and your game state will be lost.
+and then the arguments encoded as JSON. The line may or may not end in a
+newline. You should only send one command and then wait for a reply. If your
+program is not well behaved, the server will crash and your game state will
+be lost.
 
 API
 ---
@@ -83,6 +84,7 @@ Note: Two ghosts are allowed to occupy the same space, but in the serialized
 map only one ghost will be included if two or more overlap.
 
 The following objects may be found on the map:
+
  * 0, the tile is empty
  * 1, Pacman
  * 2, pacdot
